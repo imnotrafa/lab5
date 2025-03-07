@@ -1,39 +1,76 @@
 package com.codepath.articlesearch
 
-import DisplayArticle
 import android.os.Bundle
-import android.widget.ImageView
+import android.util.Log
+import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.bumptech.glide.Glide
+import androidx.lifecycle.lifecycleScope
+import com.codepath.articlesearch.models.MealEntity
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.json.JSONException
 
 private const val TAG = "DetailActivity"
 
 class DetailActivity : AppCompatActivity() {
-    private lateinit var mediaImageView: ImageView
-    private lateinit var titleTextView: TextView
-    private lateinit var bylineTextView: TextView
-    private lateinit var abstractTextView: TextView
+    private lateinit var mealInputView: TextView
+    private lateinit var calorieInputView: TextView
+
+    private lateinit var addBtn: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detail)
 
-        mediaImageView = findViewById(R.id.mediaImage)
-        titleTextView = findViewById(R.id.mediaTitle)
-        bylineTextView = findViewById(R.id.mediaByline)
-        abstractTextView = findViewById(R.id.mediaAbstract)
+        mealInputView = findViewById(R.id.mealTitleInput)
+        calorieInputView = findViewById(R.id.caloriesInput)
 
-        val article = intent.getSerializableExtra(ARTICLE_EXTRA) as DisplayArticle
+        addBtn = findViewById<Button>(R.id.addBtn)
 
-        // Set title and abstract information for the article
-        titleTextView.text = article.headline
-        bylineTextView.text = article.byline
-        abstractTextView.text = article.abstract
+        //Clicks on here and adds it to the database accordingly.
+        addBtn.setOnClickListener(){
+            var mealInputValue = mealInputView.text.toString()
+            var calorieInputValue = calorieInputView.text.toString()
+            //checkf if both are not empty
+            if (mealInputValue.isNotEmpty() && calorieInputValue.isNotEmpty()) {
+                try {
+                    // Ensure calorieInputValue is a valid integer
+                    val calories = calorieInputValue.toIntOrNull()
 
-        // Load the media image
-        Glide.with(this)
-            .load(article.mediaImageUrl)
-            .into(mediaImageView)
+                    if (calories != null) {
+                        // Launching coroutine to insert into DB
+                        lifecycleScope.launch(IO) {
+                            (application as MealsApplication).db.mealDao().insert(
+                                MealEntity(
+                                    title = mealInputValue,
+                                    calories = calorieInputValue
+                                )
+                            )
+                            // After DB operation, switch to Main thread to update UI
+                            withContext(Main) {
+                                Log.d(TAG, "Success")
+                                Toast.makeText(applicationContext, "Meal added successfully", Toast.LENGTH_SHORT).show()
+                                finish()  // Close the current activity
+                            }
+                        }
+                    } else {
+                        // If calories input is invalid
+                        Toast.makeText(applicationContext, "Please enter a valid calorie count", Toast.LENGTH_SHORT).show()
+                    }
+
+                } catch (e: Exception) {
+                    Log.e(TAG, "Exception: ${e.message}", e)  // Log the stack trace as well for better debugging
+                    Toast.makeText(applicationContext, "Error while adding meal", Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                Toast.makeText(it.context, "Error: All fields must be filled", Toast.LENGTH_SHORT).show()
+            }
+
+        }
+
     }
 }
