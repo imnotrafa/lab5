@@ -1,20 +1,20 @@
-# Android Project 5 - *Name of App Here*
+# Android Project 5 - *FitBit*
 
-Submitted by: **Your Name Here**
+Submitted by: **Rafael Abreu**
 
-**Name of your app** is a health metrics app that allows users to track ... [TODO] 
+**FitBit** is a health metrics app that allows users to track ... [TODO] 
 
-Time spent: **X** hours spent in total
+Time spent: **4** hours spent in total
 
 ## Required Features
 
 The following **required** functionality is completed:
 
-- [ ] **At least one health metric is tracked (based on user input)**
+- [X] **At least one health metric is tracked (based on user input)**
   - Chosen metric(s): `[TODO: FILL ME IN TO GET CREDIT]`
-- [ ] **There is a "create entry" UI that prompts users to make their daily entry**
-- [ ] **New entries are saved in a database and then updated in the RecyclerView**
-- [ ] **On application restart, previously entered entries are preserved (i.e., are *persistent*)**
+- [X] **There is a "create entry" UI that prompts users to make their daily entry**
+- [X] **New entries are saved in a database and then updated in the RecyclerView**
+- [X] **On application restart, previously entered entries are preserved (i.e., are *persistent*)**
  
 The following **optional** features are implemented:
 
